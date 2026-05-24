@@ -39,7 +39,7 @@ def main():
     # timer start
     start = time.time()
 
-    target_password = "melnina"
+    target_password = "weebee@16"
     target_hash = hash_password(target_password)
 
 

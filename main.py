@@ -1,38 +1,35 @@
 import hashlib
 import time
-
-
+from dictionary_cracker import load_passwords
+from brute_force import generate_passwords
 
 # hashing using sha256
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
+
+
+def crack(password_source, target_hash):
+    count = 0
+    start_time = time.time()
+
+
+    for password in password_source:
+        count +=1
+
         
-
-def password_cracker(target_hash, start_time):
-    
-    #a counter for checking amount of hashes checked
-    count = 0 
-    
-    # opening the file and looping through
-    with open("rockyou_2025_00.txt", "r", encoding="utf-8", errors="ignore")as file:
-        for line in  file:
-            # clean the data by striping any unwanted space or sign befor or after passwords
-            password = line.strip()
-            # count attempts for performance measurement
-            count += 1
-            if count % 50000 == 0:
-                elapsed = time.time() - start_time
-                speed = count / elapsed if elapsed > 0 else 0
-                print(f"[+] Tried {count} | Speed: {speed:.2f} p/s")
+        if count % 50000 == 0:
+            elapsed = time.time() - start_time
+            speed = count / elapsed if elapsed > 0 else 0
+            print(f"[+] Tried {count} | Speed: {speed:.2f} p/s")
 
 
-            # checking validation and returning the outcome
-            if hash_password(password) == target_hash:
-                return True, password , count
             
-        #in case no match found
-        return False, None , count
-    
+        if hash_password(password) == target_hash:
+            return True, password , count
+            
+    #in case no match found
+    return False, None , count
+
 
 #main function / timer and output printing
 def main():
@@ -41,10 +38,14 @@ def main():
 
     target_password = "weebee@16"
     target_hash = hash_password(target_password)
-
+    
+    #choosing cracking method:
+    passwords = load_passwords("rockyou_2025_00.txt")
+    #or 
+    # passwords =generate_passwords("0123456789", 4)
 
     #store function to cach outputs
-    result = password_cracker(target_hash, start)
+    result = crack(passwords, target_hash)
 
     #unpack result's output
     condition, password , count = result
@@ -57,20 +58,13 @@ def main():
     
     # if password found
     if condition:
-        
-        print("="*50)
         print(f"password found : {password}")
-        print(f"Tried {count} passwords in {duration:.2f} seconds")
-        print(f"speed: {speed:.2f} passwords/sec")
-        print("="*50)
-       
     #if password not found
     else:
-        
-        print("="*50)
         print("password not found")
-        print(f"Tried {count} passwords in {duration:.2f} seconds")
-        print(f"speed: {speed:.2f} passwords/sec")
-        print("="*50)
-       
+
+    print(f"Tried {count} passwords in {duration:.2f} seconds")
+    print(f"speed: {speed:.2f} passwords/sec")
+
+    
 main()

@@ -1,13 +1,8 @@
 from itertools import product
 
 
-charset = "0123456789"
-length = 4
+def generate_passwords(charset, length):
 
-
-
-for combination in product(charset, repeat=length):
-    password = "".join(combination)
-    print(password)
-
+    for combination in product(charset, repeat=length):
+        yield "".join(combination)
 
